@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
 import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -26,7 +25,7 @@ public class CreateOrderTest {
         orderClient = new OrderClient();
     }
 
-    @Parameterized.Parameters(name = "")
+    @Parameterized.Parameters(name = "color1: {0}; color2: {1}")
     public static Object[][] setColor() {
         return new Object[][]{
                 {"BLACK"},

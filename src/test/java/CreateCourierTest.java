@@ -4,7 +4,6 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
 
@@ -12,7 +11,6 @@ public class CreateCourierTest {
     private Courier courier;
     private CourierClient courierClient;
     private int courierId;
-
 
     @Before
     public void setUp() {
