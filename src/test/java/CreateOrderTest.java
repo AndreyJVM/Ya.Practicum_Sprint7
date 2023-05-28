@@ -26,7 +26,7 @@ public class CreateOrderTest {
         orderClient = new OrderClient();
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "")
     public static Object[][] setColor() {
         return new Object[][]{
                 {"BLACK"},
