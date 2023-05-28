@@ -15,11 +15,30 @@
     </properties>
 
     <dependencies>
+
+        <!--Add JUnit4-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!--Add RestAssured-->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.3.0</version>
+        </dependency>
+
+        <!--Add Allure-->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit4</artifactId>
+            <version>2.22.1</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 </project>
