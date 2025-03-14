@@ -12,59 +12,57 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <encoding>UTF-8</encoding>
-        <!--Aspectj version-->
+        <!--dependencies-->
         <aspectj.version>1.9.7</aspectj.version>
-        <!--Allure version-->
         <allure.version>2.2.0</allure.version>
+        <allure-rest-assured.version>2.21.0</allure-rest-assured.version>
+        <allure-junit4.version>2.21.0</allure-junit4.version>
+        <rest-assured.version>5.3.0</rest-assured.version>
+        <gson.version>2.10.1</gson.version>
+        <datafaker.version>1.6.0</datafaker.version>
+        <junit.version>4.13.2</junit.version>
+
+        <base.url>https://qa-scooter.praktikum-services.ru</base.url>
     </properties>
 
     <dependencies>
-        <!--Scope /main/java/-->
-        <!--RestAssured-->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>5.3.0</version>
+            <version>${rest-assured.version}</version>
         </dependency>
-        <!--Gson-->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.10.1</version>
+            <version>${gson.version}</version>
         </dependency>
-        <!--Allure rest assured-->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-rest-assured</artifactId>
-            <version>2.21.0</version>
+            <version>${allure-rest-assured.version}</version>
         </dependency>
-        <!--Data faker-->
         <dependency>
             <groupId>net.datafaker</groupId>
             <artifactId>datafaker</artifactId>
-            <version>1.6.0</version>
+            <version>${datafaker.version}</version>
         </dependency>
-
-        <!--Scope /test/java/-->
-        <!--JUnit 4 version-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--Allure junit4-->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-junit4</artifactId>
-            <version>2.21.0</version>
+            <version>${allure-junit4.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+
+
     <build>
         <plugins>
-
             <plugin>
                 <!-- настройка плагина maven-surefire-plugin -->
                 <groupId>org.apache.maven.plugins</groupId>
@@ -89,6 +87,9 @@
                             <value>${project.build.directory}/allure-results</value>
                         </property>
                     </systemProperties>
+                    <systemPropertyVariables>
+                        <base.url>${base.url}</base.url>
+                    </systemPropertyVariables>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -108,8 +109,6 @@
                     <reportVersion>2.15.0</reportVersion>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
-
 </project>

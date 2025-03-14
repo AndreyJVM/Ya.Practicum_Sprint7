@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotEquals;
 public class CourierLoginTest {
     private Courier courier;
     private CourierClient courierClient;
+    private ValidatableResponse loginResponse;
     private int courierId;
 
     @Before
@@ -29,7 +30,7 @@ public class CourierLoginTest {
     @DisplayName("Successful authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierValidLoginTest() {
-        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(courier));
+        loginResponse = courierClient.login(CourierCredentials.from(courier));
 
         int statusCode = loginResponse.extract().statusCode();
         assertEquals(SC_OK, statusCode);
@@ -42,7 +43,7 @@ public class CourierLoginTest {
     @DisplayName("Empty login authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierEmptyLoginTest() {
-        ValidatableResponse loginResponse = courierClient.login(new CourierCredentials("", courier.getPassword()));
+        loginResponse = courierClient.login(new CourierCredentials("", courier.getPassword()));
         courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
@@ -56,7 +57,7 @@ public class CourierLoginTest {
     @DisplayName("Empty password authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierEmptyPasswordTest() {
-        ValidatableResponse loginResponse = courierClient.login(new CourierCredentials(courier.getLogin(), ""));
+        loginResponse = courierClient.login(new CourierCredentials(courier.getLogin(), ""));
         courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
@@ -70,7 +71,7 @@ public class CourierLoginTest {
     @DisplayName("Null field(login) authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierNullLoginTest() {
-        ValidatableResponse loginResponse = courierClient.login(new CourierCredentials(null, courier.getPassword()));
+        loginResponse = courierClient.login(new CourierCredentials(null, courier.getPassword()));
         courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
@@ -84,7 +85,7 @@ public class CourierLoginTest {
     @DisplayName("Wrong login authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierWrongLoginTest() {
-        ValidatableResponse loginResponse = courierClient.login(new CourierCredentials("MGMT1989", courier.getPassword()));
+        loginResponse = courierClient.login(new CourierCredentials("MGMT1989", courier.getPassword()));
         courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
@@ -98,7 +99,7 @@ public class CourierLoginTest {
     @DisplayName("Wrong password authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierWrongPasswordTest() {
-        ValidatableResponse loginResponse = courierClient.login(new CourierCredentials(courier.getLogin(), "mgmt23421"));
+        loginResponse = courierClient.login(new CourierCredentials(courier.getLogin(), "mgmt23421"));
         courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
@@ -112,7 +113,7 @@ public class CourierLoginTest {
     @DisplayName("Authorization non-existent user")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierThatNotExists() {
-        ValidatableResponse loginResponse = courierClient.login(new CourierCredentials("SpaceMonkey2006", "HDDssd777"));
+        loginResponse = courierClient.login(new CourierCredentials("SpaceMonkey2006", "HDDssd777"));
         courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
