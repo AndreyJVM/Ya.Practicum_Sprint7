@@ -1,3 +1,5 @@
+package dto;
+
 public class CourierCredentials {
     private final String password;
     private final String login;
@@ -7,7 +9,7 @@ public class CourierCredentials {
         this.password = password;
     }
 
-    public static CourierCredentials from(Courier courier) {
+    public static CourierCredentials form(Courier courier) {
         return new CourierCredentials(courier.getLogin(), courier.getPassword());
     }
 

@@ -1,3 +1,7 @@
+import dto.Courier;
+import api.CourierClient;
+import api.DataGenerator;
+import dto.CourierCredentials;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
@@ -28,9 +32,9 @@ public class CreateCourierTest {
     @DisplayName("Successful courier creation")
     @Description("Basic test for post request to endpoint /api/v1/courier")
     public void createPositiveTest() {
-        courier = DataGenerator.getRandom();
+        courier = DataGenerator.getRandomCourier();
         response = courierClient.create(courier);
-        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(courier));
+        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.form(courier));
 
         int loginStatusCode = loginResponse.extract().statusCode();
         assertEquals(SC_OK, loginStatusCode);
@@ -50,12 +54,12 @@ public class CreateCourierTest {
     @DisplayName("Create courier with the same credentials")
     @Description("Basic test for post request to endpoint /api/v1/courier")
     public void createTwoSameCouriersTest() {
-        courier = new Courier(DataGenerator.getRandom().getFirstName(),
-                DataGenerator.getRandom().getLogin(),
-                DataGenerator.getRandom().getPassword());
+        courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
+                DataGenerator.getRandomCourier().getLogin(),
+                DataGenerator.getRandomCourier().getPassword());
         courierClient.create(courier);
         response = courierClient.create(courier);
-        loginResponse = courierClient.login(CourierCredentials.from(courier));
+        loginResponse = courierClient.login(CourierCredentials.form(courier));
         courierId = loginResponse.extract().path("id");
 
         String bodyAnswer = response.extract().path("message");
@@ -69,9 +73,9 @@ public class CreateCourierTest {
     @DisplayName("Create courier with null Login")
     @Description("Basic test for post request to endpoint /api/v1/courier")
     public void createWithNullLoginTest() {
-        courier = new Courier(DataGenerator.getRandom().getFirstName(),
+        courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
                 null,
-                DataGenerator.getRandom().getPassword());
+                DataGenerator.getRandomCourier().getPassword());
         response = courierClient.create(courier);
 
         int statusCode = response.extract().statusCode();
@@ -85,8 +89,8 @@ public class CreateCourierTest {
     @DisplayName("Create courier with null password")
     @Description("Basic test for post request to endpoint /api/v1/courier")
     public void createWithNullPasswordTest() {
-        courier = new Courier(DataGenerator.getRandom().getFirstName(),
-                DataGenerator.getRandom().getLogin(),
+        courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
+                DataGenerator.getRandomCourier().getLogin(),
                 null);
         response = courierClient.create(courier);
 
@@ -102,10 +106,10 @@ public class CreateCourierTest {
     @Description("Basic test for post request to endpoint /api/v1/courier")
     public void createWithNullFirstNameTest() {
         courier = new Courier(null,
-                DataGenerator.getRandom().getLogin(),
-                DataGenerator.getRandom().getPassword());
+                DataGenerator.getRandomCourier().getLogin(),
+                DataGenerator.getRandomCourier().getPassword());
         response = courierClient.create(courier);
-        courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
+        courierId = courierClient.login(CourierCredentials.form(courier)).extract().path("id");
 
         int statusCode = response.extract().statusCode();
         assertEquals(SC_CREATED, statusCode);
@@ -118,9 +122,9 @@ public class CreateCourierTest {
     @DisplayName("Create courier with empty Login")
     @Description("Basic test for post request to endpoint /api/v1/courier")
     public void createWithEmptyLoginTest() {
-        courier = new Courier(DataGenerator.getRandom().getFirstName(),
+        courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
                 "",
-                DataGenerator.getRandom().getPassword());
+                DataGenerator.getRandomCourier().getPassword());
         response = courierClient.create(courier);
 
         int statusCode = response.extract().statusCode();
@@ -134,8 +138,8 @@ public class CreateCourierTest {
     @DisplayName("Create courier with empty password")
     @Description("Basic test for post request to endpoint /api/v1/courier")
     public void createWithEmptyPasswordTest() {
-        courier = new Courier(DataGenerator.getRandom().getFirstName(),
-                DataGenerator.getRandom().getLogin(),
+        courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
+                DataGenerator.getRandomCourier().getLogin(),
                 "");
         response = courierClient.create(courier);
 

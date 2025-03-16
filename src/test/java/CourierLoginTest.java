@@ -1,22 +1,30 @@
+import dto.Courier;
+import api.CourierClient;
+import api.DataGenerator;
+import dto.CourierCredentials;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.apache.http.HttpStatus.*;
+
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class CourierLoginTest {
+
     private Courier courier;
     private CourierClient courierClient;
     private ValidatableResponse loginResponse;
     private int courierId;
+    private final String NOT_FULL_AUTH_RESP_MESSAGE = "Недостаточно данных для входа";
+    private final String NOT_FIND_ACCOUNT_RESP_MESSAGE = "Учетная запись не найдена";
 
     @Before
     public void setUp() {
-        courier = DataGenerator.getRandom();
+        courier = DataGenerator.getRandomCourier();
         courierClient = new CourierClient();
         courierClient.create(courier);
     }
@@ -30,41 +38,57 @@ public class CourierLoginTest {
     @DisplayName("Successful authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierValidLoginTest() {
-        loginResponse = courierClient.login(CourierCredentials.from(courier));
+        loginResponse = courierClient.login(CourierCredentials.form(courier));
 
-        int statusCode = loginResponse.extract().statusCode();
-        assertEquals(SC_OK, statusCode);
+        loginResponse.statusCode(200);
 
-        courierId = loginResponse.extract().path("id");
-        assertNotEquals(0, courierId);
+        loginResponse.body("id", greaterThanOrEqualTo(0));
     }
 
     @Test
     @DisplayName("Empty login authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierEmptyLoginTest() {
-        loginResponse = courierClient.login(new CourierCredentials("", courier.getPassword()));
-        courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
+        loginResponse = courierClient
+                .login(new CourierCredentials("", courier.getPassword()));
+        courierId = courierClient
+                .login(CourierCredentials.form(courier))
+                .extract()
+                .path("id");
 
-        int statusCode = loginResponse.extract().statusCode();
-        assertEquals(SC_BAD_REQUEST, statusCode);
+        int statusCode = loginResponse
+                .extract()
+                .statusCode();
 
-        String bodyAnswer = loginResponse.extract().path("message");
-        assertEquals("Недостаточно данных для входа", bodyAnswer);
+        assertEquals(400, statusCode);
+
+        String bodyAnswer = loginResponse
+                .extract()
+                .path("message");
+
+        assertEquals(NOT_FULL_AUTH_RESP_MESSAGE, bodyAnswer);
     }
 
     @Test
     @DisplayName("Empty password authorization")
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierEmptyPasswordTest() {
-        loginResponse = courierClient.login(new CourierCredentials(courier.getLogin(), ""));
-        courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
+        loginResponse = courierClient
+                .login(new CourierCredentials(courier.getLogin(), ""));
+        courierId = courierClient
+                .login(CourierCredentials.form(courier))
+                .extract()
+                .path("id");
 
-        int statusCode = loginResponse.extract().statusCode();
-        assertEquals(SC_BAD_REQUEST, statusCode);
+        int statusCode = loginResponse
+                .extract()
+                .statusCode();
+        assertEquals(400, statusCode);
 
-        String bodyAnswer = loginResponse.extract().path("message");
-        assertEquals("Недостаточно данных для входа", bodyAnswer);
+        String bodyAnswer = loginResponse
+                .extract()
+                .path("message");
+        assertEquals(NOT_FULL_AUTH_RESP_MESSAGE, bodyAnswer);
     }
 
     @Test
@@ -72,13 +96,18 @@ public class CourierLoginTest {
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierNullLoginTest() {
         loginResponse = courierClient.login(new CourierCredentials(null, courier.getPassword()));
-        courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
+        courierId = courierClient
+                .login(CourierCredentials.form(courier))
+                .extract()
+                .path("id");
 
-        int statusCode = loginResponse.extract().statusCode();
-        assertEquals(SC_BAD_REQUEST, statusCode);
+        int statusCode = loginResponse
+                .extract()
+                .statusCode();
+        assertEquals(400, statusCode);
 
         String bodyAnswer = loginResponse.extract().path("message");
-        assertEquals("Недостаточно данных для входа", bodyAnswer);
+        assertEquals(NOT_FULL_AUTH_RESP_MESSAGE, bodyAnswer);
     }
 
     @Test
@@ -86,13 +115,13 @@ public class CourierLoginTest {
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierWrongLoginTest() {
         loginResponse = courierClient.login(new CourierCredentials("MGMT1989", courier.getPassword()));
-        courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
+        courierId = courierClient.login(CourierCredentials.form(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
-        assertEquals(SC_NOT_FOUND, statusCode);
+        assertEquals(404, statusCode);
 
         String bodyAnswer = loginResponse.extract().path("message");
-        assertEquals("Учетная запись не найдена", bodyAnswer);
+        assertEquals(NOT_FIND_ACCOUNT_RESP_MESSAGE, bodyAnswer);
     }
 
     @Test
@@ -100,13 +129,13 @@ public class CourierLoginTest {
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierWrongPasswordTest() {
         loginResponse = courierClient.login(new CourierCredentials(courier.getLogin(), "mgmt23421"));
-        courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
+        courierId = courierClient.login(CourierCredentials.form(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
-        assertEquals(SC_NOT_FOUND, statusCode);
+        assertEquals(404, statusCode);
 
         String bodyAnswer = loginResponse.extract().path("message");
-        assertEquals("Учетная запись не найдена", bodyAnswer);
+        assertEquals(NOT_FIND_ACCOUNT_RESP_MESSAGE, bodyAnswer);
     }
 
     @Test
@@ -114,12 +143,16 @@ public class CourierLoginTest {
     @Description("Basic test for post request to endpoint /api/v1/courier/login")
     public void courierThatNotExists() {
         loginResponse = courierClient.login(new CourierCredentials("SpaceMonkey2006", "HDDssd777"));
-        courierId = courierClient.login(CourierCredentials.from(courier)).extract().path("id");
+        courierId = courierClient.login(CourierCredentials.form(courier)).extract().path("id");
 
         int statusCode = loginResponse.extract().statusCode();
-        assertEquals(SC_NOT_FOUND, statusCode);
+        assertEquals(404, statusCode);
 
         String bodyAnswer = loginResponse.extract().path("message");
-        assertEquals("Учетная запись не найдена", bodyAnswer);
+        assertEquals(NOT_FIND_ACCOUNT_RESP_MESSAGE, bodyAnswer);
+    }
+
+    private int response_200(ValidatableResponse response) {
+        return response.extract().statusCode();
     }
 }

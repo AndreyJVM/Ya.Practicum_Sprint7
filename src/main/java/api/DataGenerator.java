@@ -1,9 +1,13 @@
+package api;
+
+import dto.Courier;
+import dto.Order;
 import net.datafaker.Faker;
 
 public class DataGenerator {
     static Faker faker = new Faker();
 
-    public static Courier getRandom() {
+    public static Courier getRandomCourier() {
         String login = faker.name().fullName();
         String password = String.valueOf(faker.password());
         String firstName = faker.name().fullName();
@@ -20,6 +24,8 @@ public class DataGenerator {
         int rentTime = 12;
         String deliveryDate = "2023-07-07";
         String comment = "Это тестовый комментарий";
-        return new Order(firstName, lastName, address, metroStation, phone, rentTime, deliveryDate, comment, color);
+
+        return new Order(firstName, lastName, address, metroStation,
+                phone, rentTime, deliveryDate, comment, color);
     }
 }
