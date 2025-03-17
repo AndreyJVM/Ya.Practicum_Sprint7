@@ -1,3 +1,5 @@
+package api.order;
+
 import api.DataGenerator;
 import api.OrderClient;
 import dto.Order;
@@ -8,9 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 @RunWith(Parameterized.class)
 public class CreateOrderTest {
@@ -18,6 +19,7 @@ public class CreateOrderTest {
     private Order order;
     private OrderClient orderClient;
     private final String[] color;
+    private ValidatableResponse response;
 
     public CreateOrderTest(String color) {
         this.color = new String[]{color};
@@ -43,12 +45,9 @@ public class CreateOrderTest {
     @Description("Basic test for post request to endpoint /api/v1/orders")
     public void createOrderPositiveTest() {
         order = DataGenerator.getRandomWithoutColor(color);
-        ValidatableResponse response = orderClient.create(order);
-
-        int statusCode = response.extract().statusCode();
-        assertEquals(SC_CREATED, statusCode);
-
-        int track = response.extract().path("track");
-        assertNotEquals(0, track);
+        orderClient
+                .create(order)
+                .statusCode(201)
+                .body("track", greaterThanOrEqualTo(0));
     }
 }

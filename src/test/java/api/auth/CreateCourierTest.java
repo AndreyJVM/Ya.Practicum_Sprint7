@@ -1,35 +1,22 @@
-import dto.Courier;
-import api.CourierClient;
+package api.auth;
+
 import api.DataGenerator;
+import dto.Courier;
 import dto.CourierCredentials;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.*;
 
-public class CreateCourierTest {
-    private Courier courier;
-    private CourierClient courierClient;
+public class CreateCourierTest extends BaseTest{
+
     private ValidatableResponse response, loginResponse;
     private static final String LOGIN_ALREADY_USE = "Этот логин уже используется. Попробуйте другой.";
     private static final String NOT_FULL_DATA = "Недостаточно данных для создания учетной записи";
     private int courierId;
-
-    @Before
-    public void setUp() {
-        courierClient = new CourierClient();
-    }
-
-    @After
-    public void cleanUp() {
-        courierClient.delete(courierId);
-    }
 
     @Test
     @DisplayName("Successful courier creation")
@@ -117,13 +104,11 @@ public class CreateCourierTest {
         courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
                 "",
                 DataGenerator.getRandomCourier().getPassword());
-        response = courierClient.create(courier);
 
-        int statusCode = response.extract().statusCode();
-        assertEquals(400, statusCode);
-
-        String bodyAnswer = response.extract().path("message");
-        assertEquals(NOT_FULL_DATA, bodyAnswer);
+        courierClient
+                .create(courier)
+                .statusCode(400)
+                .body("message", equalTo(NOT_FULL_DATA));
     }
 
     @Test
@@ -133,12 +118,10 @@ public class CreateCourierTest {
         courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
                 DataGenerator.getRandomCourier().getLogin(),
                 "");
-        response = courierClient.create(courier);
 
-        int statusCode = response.extract().statusCode();
-        assertEquals(400, statusCode);
-
-        String bodyAnswer = response.extract().path("message");
-        assertEquals(NOT_FULL_DATA, bodyAnswer);
+        courierClient
+                .create(courier)
+                .statusCode(400)
+                .body("message", equalTo(NOT_FULL_DATA));
     }
 }

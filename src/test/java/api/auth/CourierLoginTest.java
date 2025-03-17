@@ -1,34 +1,25 @@
-import dto.Courier;
-import api.CourierClient;
+package api.auth;
+
 import api.DataGenerator;
 import dto.CourierCredentials;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-public class CourierLoginTest {
+public class CourierLoginTest extends BaseTest{
 
-    private Courier courier;
-    private CourierClient courierClient;
     private final static String EMPTY_STRING = "";
     private final static String NOT_FULL_AUTH_RESP_MESSAGE = "Недостаточно данных для входа";
     private final static String NOT_FIND_ACCOUNT_RESP_MESSAGE = "Учетная запись не найдена";
 
-    @Before
+    @Override
     public void setUp() {
+        super.setUp();
         courier = DataGenerator.getRandomCourier();
-        courierClient = new CourierClient();
         courierClient.create(courier);
-    }
-
-    @After
-    public void cleanUp() {
-        courierClient.delete(getIdCourierClient());
     }
 
     @Test
