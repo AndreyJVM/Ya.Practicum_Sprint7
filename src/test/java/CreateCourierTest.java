@@ -8,14 +8,17 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.apache.http.HttpStatus.*;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.*;
 
 public class CreateCourierTest {
     private Courier courier;
     private CourierClient courierClient;
-    private ValidatableResponse response,
-            loginResponse;
+    private ValidatableResponse response, loginResponse;
+    private static final String LOGIN_ALREADY_USE = "Этот логин уже используется. Попробуйте другой.";
+    private static final String NOT_FULL_DATA = "Недостаточно данных для создания учетной записи";
     private int courierId;
 
     @Before
@@ -33,21 +36,16 @@ public class CreateCourierTest {
     @Description("Basic test for post request to endpoint /api/v1/courier")
     public void createPositiveTest() {
         courier = DataGenerator.getRandomCourier();
-        response = courierClient.create(courier);
-        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.form(courier));
 
-        int loginStatusCode = loginResponse.extract().statusCode();
-        assertEquals(SC_OK, loginStatusCode);
+        courierClient
+                .create(courier)
+                .statusCode(201)
+                .body("ok", equalTo(true));
 
-        int statusCode = response.extract().statusCode();
-        assertEquals(SC_CREATED, statusCode);
-
-
-        boolean isCreated = response.extract().path("ok");
-        assertTrue(isCreated);
-
-        courierId = loginResponse.extract().path("id");
-        assertNotEquals(0, courierId);
+        courierClient
+                .login(CourierCredentials.form(courier))
+                .statusCode(200)
+                .body("id", greaterThanOrEqualTo(0));
     }
 
     @Test
@@ -58,15 +56,16 @@ public class CreateCourierTest {
                 DataGenerator.getRandomCourier().getLogin(),
                 DataGenerator.getRandomCourier().getPassword());
         courierClient.create(courier);
+
         response = courierClient.create(courier);
+
         loginResponse = courierClient.login(CourierCredentials.form(courier));
+
+        response
+                .body("message", equalTo(LOGIN_ALREADY_USE))
+                .statusCode(409);
+
         courierId = loginResponse.extract().path("id");
-
-        String bodyAnswer = response.extract().path("message");
-        assertEquals("Этот логин уже используется. Попробуйте другой.", bodyAnswer);
-
-        int statusCode = response.extract().statusCode();
-        assertEquals(SC_CONFLICT, statusCode);
     }
 
     @Test
@@ -76,13 +75,10 @@ public class CreateCourierTest {
         courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
                 null,
                 DataGenerator.getRandomCourier().getPassword());
-        response = courierClient.create(courier);
-
-        int statusCode = response.extract().statusCode();
-        assertEquals(SC_BAD_REQUEST, statusCode);
-
-        String bodyAnswer = response.extract().path("message");
-        assertEquals("Недостаточно данных для создания учетной записи", bodyAnswer);
+        courierClient
+                .create(courier)
+                .statusCode(400)
+                .body("message", equalTo(NOT_FULL_DATA));
     }
 
     @Test
@@ -92,13 +88,10 @@ public class CreateCourierTest {
         courier = new Courier(DataGenerator.getRandomCourier().getFirstName(),
                 DataGenerator.getRandomCourier().getLogin(),
                 null);
-        response = courierClient.create(courier);
 
-        int statusCode = response.extract().statusCode();
-        assertEquals(SC_BAD_REQUEST, statusCode);
-
-        String bodyAnswer = response.extract().path("message");
-        assertEquals("Недостаточно данных для создания учетной записи", bodyAnswer);
+        courierClient.create(courier)
+                .statusCode(400)
+                .body("message", equalTo(NOT_FULL_DATA));
     }
 
     @Test
@@ -108,14 +101,13 @@ public class CreateCourierTest {
         courier = new Courier(null,
                 DataGenerator.getRandomCourier().getLogin(),
                 DataGenerator.getRandomCourier().getPassword());
-        response = courierClient.create(courier);
+
+        courierClient
+                .create(courier)
+                .statusCode(201)
+                .body("ok", equalTo(true));
+
         courierId = courierClient.login(CourierCredentials.form(courier)).extract().path("id");
-
-        int statusCode = response.extract().statusCode();
-        assertEquals(SC_CREATED, statusCode);
-
-        boolean isCreated = response.extract().path("ok");
-        assertTrue(isCreated);
     }
 
     @Test
@@ -128,10 +120,10 @@ public class CreateCourierTest {
         response = courierClient.create(courier);
 
         int statusCode = response.extract().statusCode();
-        assertEquals(SC_BAD_REQUEST, statusCode);
+        assertEquals(400, statusCode);
 
         String bodyAnswer = response.extract().path("message");
-        assertEquals("Недостаточно данных для создания учетной записи", bodyAnswer);
+        assertEquals(NOT_FULL_DATA, bodyAnswer);
     }
 
     @Test
@@ -144,9 +136,9 @@ public class CreateCourierTest {
         response = courierClient.create(courier);
 
         int statusCode = response.extract().statusCode();
-        assertEquals(SC_BAD_REQUEST, statusCode);
+        assertEquals(400, statusCode);
 
         String bodyAnswer = response.extract().path("message");
-        assertEquals("Недостаточно данных для создания учетной записи", bodyAnswer);
+        assertEquals(NOT_FULL_DATA, bodyAnswer);
     }
 }
