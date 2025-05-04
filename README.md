@@ -1,5 +1,16 @@
 # Тестирование API 
 # Учебный сервис Яндекс.Самокат:
+
+### Запуск тестов:
+*  Проверить наличие Maven:
+```shell
+mvn --version
+```
+*  Запустить все тесты из `/src/test/java/*`
+```shell
+mvn clean test
+```
+
 Ссылка на Яндекс.Самокат - http://qa-scooter.praktikum-services.ru/
 
 Его документация - https://qa-scooter.praktikum-services.ru/docs/
