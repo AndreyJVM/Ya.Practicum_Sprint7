@@ -2,13 +2,13 @@
 # Учебный сервис Яндекс.Самокат:
 
 ### Запуск тестов:
-*  Проверить наличие Maven:
+*  Проверка работы maven wrapper (Windows):
 ```shell
-mvn --version
+  .\mvnw.cmd --version
 ```
 *  Запустить все тесты из `/src/test/java/*`
 ```shell
-mvn clean test
+  .\mvnw.cmd clean test
 ```
 
 Ссылка на Яндекс.Самокат - http://qa-scooter.praktikum-services.ru/
